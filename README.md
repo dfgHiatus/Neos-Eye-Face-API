@@ -7,7 +7,7 @@ Related issue on the Neos Github:
 https://github.com/Neos-Metaverse/NeosPublic/issues/1140
 
 ## Usage
-0. Install [NeosModLoader](https://github.com/zkxs/NeosModLoader) and [mixNmatch_lipsNmouth](https://github.com/dfgHiatus/mixNmatch_lipsNmouth/releases/tag/v1.0.0).
+0. Install [NeosModLoader](https://github.com/zkxs/NeosModLoader).
 1. Clone this Repository
 2. Update EyeTracker.cs and MouthTracker.cs's parameters with values of your own.
 3. Build and place your DLL under "nml_mods". This folder should be at `C:\Program Files (x86)\Steam\steamapps\common\NeosVR\nml_mods` for a default install. You can create it if it's missing, or if you launch the game once with NeosModLoader.
