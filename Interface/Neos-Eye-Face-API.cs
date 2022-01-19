@@ -34,7 +34,6 @@ namespace Neos_OpenSeeFace_Integration
 				catch
 				{
 					Warn("Module failed to initiallize.");
-					throw;
 				}
 			}
 		}
