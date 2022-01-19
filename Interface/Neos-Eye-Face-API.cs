@@ -31,9 +31,10 @@ namespace Neos_OpenSeeFace_Integration
 					Debug("Module Name: " + gen.ToString());
 					__instance.RegisterInputDriver(gen);
 				}
-				catch
+				catch (Exception e)
 				{
 					Warn("Module failed to initiallize.");
+					Warn(e.ToString());
 				}
 			}
 		}
