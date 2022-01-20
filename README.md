@@ -1,4 +1,4 @@
-# Neos-Tobii-Eye-Tracking-Integration"
+# Neos-Eye-Face-API
 
 A [NeosModLoader](https://github.com/zkxs/NeosModLoader) mod for [Neos VR](https://neos.com/)  
 Enables developers to add implement their own eye and face tracking solutions for NeosVR.
