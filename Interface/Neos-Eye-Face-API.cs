@@ -11,7 +11,7 @@ namespace Neos_OpenSeeFace_Integration
 		public override string Name => "Neos-WCFace-Integration";
 		public override string Author => "dfgHiatus";
 		public override string Version => "1.0.0";
-		public override string Link => "https://github.com/dfgHiatus/https://github.com/dfgHiatus/Neos-Eye-Face-API/";
+		public override string Link => "https://github.com/dfgHiatus/Neos-Eye-Face-API/";
 		public override void OnEngineInit()
 		{
 			// Harmony.DEBUG = true;
