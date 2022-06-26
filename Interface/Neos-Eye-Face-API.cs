@@ -4,20 +4,19 @@ using FrooxEngine;
 using BaseX;
 using System;
 
-namespace Neos_OpenSeeFace_Integration
+namespace Neos_EyeFace_API
 {
-	public class Neos_OpenSeeFace_Integration : NeosMod
+	public class Neos_EyeFace_API : NeosMod
 	{
-		public override string Name => "Neos-WCFace-Integration";
+		public override string Name => "Neos_EyeFace_API";
 		public override string Author => "dfgHiatus";
-		public override string Version => "1.0.0";
+		public override string Version => "1.1.0";
 		public override string Link => "https://github.com/dfgHiatus/Neos-Eye-Face-API/";
 		public override void OnEngineInit()
 		{
 			// Harmony.DEBUG = true;
-			Harmony harmony = new Harmony("net.dfgHiatus.Neos-Eye-Face-API");
-			harmony.PatchAll();
-		}
+			new Harmony("net.dfgHiatus.Neos-EyeFace-API").PatchAll();
+        }
 
 		[HarmonyPatch(typeof(InputInterface), MethodType.Constructor)]
 		[HarmonyPatch(new[] { typeof(Engine)})]
@@ -28,8 +27,7 @@ namespace Neos_OpenSeeFace_Integration
 				try
 				{
 					GenericInputDevice gen = new GenericInputDevice();
-					Debug("Module Name: " + gen.ToString());
-					__instance.RegisterInputDriver(gen);
+                    __instance.RegisterInputDriver(gen);
 				}
 				catch (Exception e)
 				{
@@ -40,107 +38,100 @@ namespace Neos_OpenSeeFace_Integration
 		}
 	}
 
-	class GenericInputDevice : IInputDriver
+	public class GenericInputDevice : IInputDriver
 	{
-		public Eyes eyes;
-		public Mouth mouth;
-		public GenericDevice.EyeInterface.EyeData eyeInt = new GenericDevice.EyeInterface.EyeData();
-		public GenericDevice.MouthInterface.MouthData mouthInt = new GenericDevice.MouthInterface.MouthData();
-		public int UpdateOrder => 100;
+		private Eyes _eyes;
+        private Mouth _mouth;
+        public int UpdateOrder => 100;
 
-		public void CollectDeviceInfos(BaseX.DataTreeList list)
+		public void CollectDeviceInfos(DataTreeList list)
         {
-			DataTreeDictionary EyeDataTreeDictionary = new DataTreeDictionary();
-			EyeDataTreeDictionary.Add("Name", "Generic Eye Tracking");
-			EyeDataTreeDictionary.Add("Type", "Eye Tracking");
-			EyeDataTreeDictionary.Add("Model", "Generic Eye Model");
-			list.Add(EyeDataTreeDictionary);
+			DataTreeDictionary eyeDataTreeDictionary = new DataTreeDictionary();
+			eyeDataTreeDictionary.Add("Name", "Generic Eye Tracking");
+			eyeDataTreeDictionary.Add("Type", "Eye Tracking");
+			eyeDataTreeDictionary.Add("Model", "Generic Eye Model");
+			list.Add(eyeDataTreeDictionary);
 
-			DataTreeDictionary MouthDataTreeDictionary = new DataTreeDictionary();
-			MouthDataTreeDictionary.Add("Name", "Generic Face Tracking");
-			MouthDataTreeDictionary.Add("Type", "Face Tracking");
-			MouthDataTreeDictionary.Add("Model", "Generic Face Model");
-			list.Add(MouthDataTreeDictionary);
+			DataTreeDictionary mouthDataTreeDictionary = new DataTreeDictionary();
+			mouthDataTreeDictionary.Add("Name", "Generic Face Tracking");
+			mouthDataTreeDictionary.Add("Type", "Face Tracking");
+			mouthDataTreeDictionary.Add("Model", "Generic Face Model");
+			list.Add(mouthDataTreeDictionary);
 		}
 
 		public void RegisterInputs(InputInterface inputInterface)
 		{
-			eyes = new Eyes(inputInterface, "Generic Eye Tracking");
-			mouth = new Mouth(inputInterface, "Generic Mouth Tracking");
+			_eyes = new Eyes(inputInterface, "Generic Eye Tracking");
+			_mouth = new Mouth(inputInterface, "Generic Mouth Tracking");
 		}
 
 		public void UpdateInputs(float deltaTime)
         {
-			UpdateEyes();
-			UpdateMouth();
+			UpdateEyes(deltaTime);
+			UpdateMouth(deltaTime);
 		}
 
 		// See EyeInterface.cs for how to update these values
-		public void UpdateEyes()
+        private void UpdateEyes(float deltaTime)
         {
-			eyes.LeftEye.IsDeviceActive = eyeInt.LeftIsDeviceActive;
-			eyes.RightEye.IsDeviceActive = eyeInt.RightIsDeviceActive;
-			eyes.CombinedEye.IsDeviceActive = eyeInt.CombinedIsDeviceActive;
+            _eyes.IsEyeTrackingActive = _eyes.IsEyeTrackingActive;
+            UpdateEye(float3.Zero, float3.Zero, true, 0.003f,
+                1f, 0f, 0f, 0f, deltaTime, _eyes.LeftEye);
+            UpdateEye(float3.Zero, float3.Zero, true, 0.003f,
+                1f, 0f, 0f, 0f, deltaTime, _eyes.RightEye);
+			UpdateEye(float3.Zero, float3.Zero, true, 0.003f,
+                1f, 0f, 0f, 0f, deltaTime, _eyes.CombinedEye);
+        }
+        private void UpdateEye(float3 gazeDirection, float3 gazeOrigin, bool status, float pupilSize, float openness,
+            float widen, float squeeze, float frown, float deltaTime, Eye eye)
+        {
+            eye.IsDeviceActive = Engine.Current.InputInterface.VR_Active;
+            eye.IsTracking = status;
 
-			eyes.LeftEye.IsTracking = eyeInt.LeftIsTracking;
-			eyes.RightEye.IsTracking = eyeInt.RightIsDeviceActive;
-			eyes.CombinedEye.IsTracking = eyeInt.CombinedIsDeviceActive;
+            if (eye.IsTracking)
+            {
+                eye.UpdateWithDirection(gazeDirection);
+                eye.RawPosition = gazeOrigin;
+                eye.PupilDiameter = pupilSize;
+            }
 
-			eyes.Timestamp = eyeInt.Timestamp;
-
-			eyes.LeftEye.Squeeze = eyeInt.LeftSqueeze;
-			eyes.RightEye.Squeeze = eyeInt.RightSqueeze;
-			eyes.RightEye.Squeeze = eyeInt.CombinedSqueeze;
-
-			eyes.LeftEye.Widen = eyeInt.LeftWiden;
-			eyes.RightEye.Widen = eyeInt.RightWiden;
-			eyes.CombinedEye.Widen = eyeInt.CombinedWiden;
-
-			eyes.LeftEye.Frown = eyeInt.LeftFrown;
-			eyes.RightEye.Frown = eyeInt.RightFrown;
-			eyes.CombinedEye.Frown = eyeInt.CombinedFrown;
-
-			eyes.LeftEye.Openness = eyeInt.LeftOpenness;
-			eyes.RightEye.Openness = eyeInt.RightOpenness;
-			eyes.CombinedEye.Openness = eyeInt.CombinedOpenness;
-
-			eyes.LeftEye.PupilDiameter = eyeInt.LeftPupilDiameter;
-			eyes.RightEye.PupilDiameter = eyeInt.RightPupilDiameter;
-			eyes.CombinedEye.PupilDiameter = eyeInt.CombinedPupilDiameter;
-		}
+            eye.Openness = openness;
+            eye.Widen = widen;
+            eye.Squeeze = squeeze;
+            eye.Frown = frown;
+        }
 
 		// See MouthInterface.cs for how to update these values
-		public void UpdateMouth()
+        private void UpdateMouth(float deltaTime)
         {
-			mouth.IsDeviceActive = mouthInt.IsDeviceActive;
+			_mouth.IsDeviceActive = true;
 
-			mouth.IsTracking = mouthInt.IsTracking;
+			_mouth.IsTracking = true;
 
-			mouth.Jaw = mouthInt.Jaw;
-			mouth.Tongue = mouthInt.Tongue;
+			_mouth.Jaw = float3.Zero;
+			_mouth.Tongue = float3.Zero;
 
-			mouth.JawOpen = mouthInt.JawOpen;
-			mouth.MouthPout = mouthInt.MouthPout;
-			mouth.TongueRoll = mouthInt.TongueRoll;
+			_mouth.JawOpen = 0f;
+			_mouth.MouthPout = 0f;
+			_mouth.TongueRoll = 0f;
 
-			mouth.LipBottomOverUnder = mouthInt.LipBottomOverUnder;
-			mouth.LipBottomOverturn = mouthInt.LipBottomOverturn;
-			mouth.LipTopOverUnder = mouthInt.LipTopOverUnder;
-			mouth.LipTopOverturn = mouthInt.LipTopOverturn;
+			_mouth.LipBottomOverUnder = 0f;
+			_mouth.LipBottomOverturn = 0f;
+			_mouth.LipTopOverUnder = 0f;
+			_mouth.LipTopOverturn = 0f;
 
-			mouth.LipLowerHorizontal = mouthInt.LipLowerHorizontal;
-			mouth.LipUpperHorizontal = mouthInt.LipUpperHorizontal;
+			_mouth.LipLowerHorizontal = 0f;
+			_mouth.LipUpperHorizontal = 0f;
 
-			mouth.LipLowerLeftRaise = mouthInt.LipLowerLeftRaise;
-			mouth.LipLowerRightRaise = mouthInt.LipLowerRightRaise;
-			mouth.LipUpperRightRaise = mouthInt.LipUpperRightRaise;
-			mouth.LipUpperLeftRaise = mouthInt.LipUpperLeftRaise;
+			_mouth.LipLowerLeftRaise = 0f;
+			_mouth.LipLowerRightRaise = 0f;
+			_mouth.LipUpperRightRaise = 0f;
+			_mouth.LipUpperLeftRaise = 0f;
 
-			mouth.MouthRightSmileFrown = mouthInt.MouthRightSmileFrown;
-			mouth.MouthLeftSmileFrown = mouthInt.MouthLeftSmileFrown;
-			mouth.CheekLeftPuffSuck = mouthInt.CheekLeftPuffSuck;
-			mouth.CheekRightPuffSuck = mouthInt.CheekRightPuffSuck;
-
-		}
+			_mouth.MouthRightSmileFrown = 0f;
+			_mouth.MouthLeftSmileFrown = 0f;
+			_mouth.CheekLeftPuffSuck = 0f;
+			_mouth.CheekRightPuffSuck = 0f;
+        }
 	}
 }
