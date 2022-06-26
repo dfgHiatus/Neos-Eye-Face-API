@@ -84,7 +84,6 @@ namespace Neos_EyeFace_API
 			UpdateMouth(deltaTime);
 		}
 
-		// See EyeInterface.cs for how to update these values
         private void UpdateEyes(float deltaTime)
         {
             _eyes.IsEyeTrackingActive = _eyes.IsEyeTrackingActive;
@@ -121,7 +120,6 @@ namespace Neos_EyeFace_API
             eye.Frown = frown;
         }
 
-		// See MouthInterface.cs for how to update these values
         private void UpdateMouth(float deltaTime)
         {
 			_mouth.IsDeviceActive = true;
