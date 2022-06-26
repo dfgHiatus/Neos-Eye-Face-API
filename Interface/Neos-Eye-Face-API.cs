@@ -38,6 +38,19 @@ namespace Neos_EyeFace_API
 		}
 	}
 
+
+	[HarmonyPatch(typeof(Engine), "Shutdown")]
+	public class ShutdownPatch
+	{
+		public static bool Prefix()
+		{
+			// Hardware shutdown code goes here
+			// ...
+			// ...
+			return true;
+		}
+	}
+
 	public class GenericInputDevice : IInputDriver
 	{
 		private Eyes _eyes;
@@ -75,13 +88,20 @@ namespace Neos_EyeFace_API
         private void UpdateEyes(float deltaTime)
         {
             _eyes.IsEyeTrackingActive = _eyes.IsEyeTrackingActive;
+
             UpdateEye(float3.Zero, float3.Zero, true, 0.003f,
                 1f, 0f, 0f, 0f, deltaTime, _eyes.LeftEye);
             UpdateEye(float3.Zero, float3.Zero, true, 0.003f,
                 1f, 0f, 0f, 0f, deltaTime, _eyes.RightEye);
+
 			UpdateEye(float3.Zero, float3.Zero, true, 0.003f,
                 1f, 0f, 0f, 0f, deltaTime, _eyes.CombinedEye);
-        }
+			_eyes.ComputeCombinedEyeParameters();
+
+			_eyes.ConvergenceDistance = 0f;
+			_eyes.Timestamp += deltaTime;
+			_eyes.FinishUpdate();
+		}
         private void UpdateEye(float3 gazeDirection, float3 gazeOrigin, bool status, float pupilSize, float openness,
             float widen, float squeeze, float frown, float deltaTime, Eye eye)
         {
