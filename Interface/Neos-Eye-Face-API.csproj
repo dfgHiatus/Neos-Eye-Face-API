@@ -6,8 +6,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>NeosWCFaceIntegration</RootNamespace>
-    <AssemblyName>NeosWCFaceIntegration</AssemblyName>
+    <RootNamespace>NeosEyeFaceAPI</RootNamespace>
+    <AssemblyName>NeosEyeFaceAPI</AssemblyName>
     <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
@@ -54,7 +54,9 @@
     <Reference Include="System.Numerics" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Neos-Eye-Face-API.cs" />
+    <Compile Include="EyeDevice.cs" />
+    <Compile Include="EyeFaceAPI.cs" />
+    <Compile Include="MouthDevice.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
