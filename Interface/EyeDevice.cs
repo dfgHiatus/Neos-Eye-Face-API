@@ -36,13 +36,13 @@ namespace NeosEyeFaceAPI
         {
             _eyes.IsEyeTrackingActive = _eyes.IsEyeTrackingActive;
 
-            UpdateEye(float3.Zero, float3.Zero, true, 0.003f,
-                1f, 0f, 0f, 0f, deltaTime, _eyes.LeftEye);
-            UpdateEye(float3.Zero, float3.Zero, true, 0.003f,
-                1f, 0f, 0f, 0f, deltaTime, _eyes.RightEye);
+            UpdateEye(float3.Zero, float3.Zero, true, 0.003f, 1f, 
+                0f, 0f, 0f, deltaTime, _eyes.LeftEye);
+            UpdateEye(float3.Zero, float3.Zero, true, 0.003f, 1f, 
+                0f, 0f, 0f, deltaTime, _eyes.RightEye);
 
-            UpdateEye(float3.Zero, float3.Zero, true, 0.003f,
-                1f, 0f, 0f, 0f, deltaTime, _eyes.CombinedEye);
+            UpdateEye(float3.Zero, float3.Zero, true, 0.003f, 1f, 
+                0f, 0f, 0f, deltaTime, _eyes.CombinedEye);
             _eyes.ComputeCombinedEyeParameters();
 
             _eyes.ConvergenceDistance = 0f;
